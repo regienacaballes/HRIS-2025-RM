@@ -8,9 +8,9 @@
 @section('title') Leave Request Dashboard @endsection
 
 @section('content')
-<div class="py-6 px-4 sm:px-6 lg:px-8 mx-auto">
+<div class="py-4 px-4 sm:px-6 lg:px-8 mx-auto">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Leave Requests</h1>
+        <h1 class="text-2xl font-bold text-gray-900">Request Summary</h1>
         
         @if(auth()->user()->isEmployee() || auth()->user()->isHr() || auth()->user()->isAdmin())
             <a href="{{ route('leave.create') }}">
@@ -87,13 +87,15 @@
     <div class="bg-white shadow-sm rounded-lg overflow-hidden">
         <div class="min-w-full divide-y divide-gray-200">
             <div class="bg-gray-50">
-                <div class="grid grid-cols-7 gap-2 px-4 py-3 text-xs sm:text-sm font-medium text-gray-500 uppercase tracking-wider">
+                <div class="grid grid-cols-7 gap-2 px-4 py-3 text-xs sm:text-sm font-semibold text-gray-800  tracking-wider">
                     <div>Employee</div>
                     <div>Leave Type</div>
                     <div>Period</div>
-                    <div>Duration</div>
-                    <div>Status</div>
+                    {{-- <div>Duration</div> --}}
                     <div>Created</div>
+                    <div>Reason for Leave</div>
+                    <div>Status</div>
+                    
                     <div class="text-right">Actions</div>
                 </div>
             </div>
@@ -103,11 +105,20 @@
                     <div class="grid grid-cols-7 gap-2 px-4 py-3 whitespace-nowrap">
                         <div class="text-sm font-medium text-gray-900">{{ $request->employee->getFullName() }}</div>
                         <div class="text-sm text-gray-600">{{ LeaveType::getLabel($request->leave_type) }}</div>
-                        <div class="text-sm text-gray-600">
+                        <div class="text-sm text-gray-600 relative group">
                             {{ $request->start_date->format('M d, Y') }} - {{ $request->end_date->format('M d, Y') }}
+                            <div class="absolute left-5 -mt-3 hidden group-hover:flex bg-gray-800 text-white text-sm p-2 rounded shadow-lg
+                                whitespace-nowrap px-3 py-1">{{ $request->start_date->diffInDays($request->end_date) + 1 }} days</div>
                         </div>
-                        <div class="text-sm text-gray-600">
+                        {{-- <div class="text-sm text-gray-600">
                             {{ $request->start_date->diffInDays($request->end_date) + 1 }} days
+                        </div> --}}
+                        <div class="text-sm text-gray-600">{{ $request->created_at->format('M d, Y') }}</div>
+                        <div class="text-sm text-gray-600 relative group ">
+                            <span class="cursor-pointer">{{ \Illuminate\Support\Str::limit($request->reason, 20, '...') }}</span>
+                            <div class="absolute -right-20 -mt-2 hidden group-hover:flex bg-gray-800 text-white text-sm rounded shadow-lg
+                                w-72 max-w-xl whitespace-normal z-10">{{ $request->reason}}</div>
+                                {{-- may problem pa sa pagdisplay ng hover --}}
                         </div>
                         <div>
                             <span @class([
@@ -119,7 +130,9 @@
                                 {{ RequestStatus::getLabel($request->status) }}
                             </span>
                         </div>
-                        <div class="text-sm text-gray-600">{{ $request->created_at->format('M d, Y') }}</div>
+                        {{-- <button class="px-3 py-2 bg-[#F5F5F5] ml-2 text-[24px] font-bold" onclick="toggleDropdown(this)">
+                            &#8942;</button>
+                        <div class="hidden absolute right-20 -mt-10 bg-white border border-gray-200 rounded-lg shadow-md w-32 p-2 z-20 text-right space-x-2"> --}}
                         <div class="text-right space-x-2">
                             <a href="{{ route('leave.show', $request) }}" target="_blank">
                                 <x-button text="View" />
@@ -181,5 +194,18 @@
             }
         }))
     })
+
+    function toggleDropdown(button) {
+                        const dropdown = button.nextElementSibling;
+                        dropdown.classList.toggle("hidden");
+
+                        // Close dropdown when clicking outside
+                        document.addEventListener("click", function hideDropdown(event) {
+                            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                                dropdown.classList.add("hidden");
+                                document.removeEventListener("click", hideDropdown);
+                            }
+                        });
+                    }
 </script>
 @endsection

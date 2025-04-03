@@ -8,8 +8,6 @@
     <title>@yield('title')</title>
 
     <!-- Fonts -->
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.0.1/dist/flowbite.bundle.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.1/flowbite.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -746,6 +744,10 @@
             font-size: .875rem;
             line-height: 1.25rem
         }
+        .text-lg {
+            font-size: 1.125rem; 
+            line-height: 1.75rem; 
+        }
 
         .text-sm\/relaxed {
             font-size: .875rem;
@@ -1228,10 +1230,10 @@
 
         <!-- Main Content -->
         <div class="flex-1 overflow-auto">
-            <header class="bg-white shadow h-16 flex items-center px-6">
+            <header class="bg-white h-18 flex flex-col mt-5 px-6">
                 <h1 class="text-xl font-semibold text-gray-800">@yield('title')</h1>
-            </header>
-            <main class="p-6">
+            </header>            
+            <main class="p-1">
                 @yield('content')
             </main>
         </div>
