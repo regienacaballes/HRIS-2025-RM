@@ -7,9 +7,9 @@
 
     <title>@yield('title')</title>
 
-    <!-- Fonts -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.0.1/dist/flowbite.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.1/flowbite.min.js"></script>
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
