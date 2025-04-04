@@ -94,8 +94,8 @@
                     {{-- <div>Duration</div> --}}
                     <div class="basis-42">Created</div>
                     <div class="basis-72">Reason for Leave</div>
+                    <div class="basis-54">Attachments</div>
                     <div class="basis-36">Status</div>
-                    <div class="basis-36">Attachments</div>
                     <div class="basis-36">Actions</div>
                 </div>
             </div>
@@ -116,6 +116,20 @@
                             <span class="cursor-pointer">{{ \Illuminate\Support\Str::limit($request->reason, 35, '...') }}</span>
                             <div class="absolute -right-7 -mt-2 hidden group-hover:flex bg-gray-800 text-white text-sm rounded shadow-lg w-72 max-w-xl whitespace-normal z-20">
                                 {{ $request->reason}}
+                            </div>
+                        </div>
+                        <div class="basis-54 text-primary cursor-pointer">
+                            <span class="preview-link" data-image="{{$request->proof_of_leader_approval}}" onclick="previewImage(this)">Proof 1</span>
+                            <span class="preview-link" data-image="{{$request->proof_of_confirmed_designatory_tasks}}" onclick="previewImage(this)">| Proof 2</span>
+                            @if ($request->leave_type === 'sick')
+                                <span class="preview-link" data-image="{{ $request->proof_of_leave }}" onclick="previewImage(this)">| Proof 2</span>
+                            @endif
+
+                        </div>
+                        <div id="modal" class="hidden fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+                            <div class="bg-white p-6 rounded-lg shadow-lg relative">
+                                <span id="close-modal" class="absolute top-2 right-4 text-gray-600 text-xl cursor-pointer">&times;</span>
+                                <img id="modal-image" src="" alt="Preview" class="w-96 h-auto">
                             </div>
                         </div>
                         <div class="basis-36 items-center">
@@ -205,16 +219,63 @@
     })
 
     function toggleDropdown(button) {
-                        const dropdown = button.nextElementSibling;
-                        dropdown.classList.toggle("hidden");
+        const dropdown = button.nextElementSibling;
+        dropdown.classList.toggle("hidden");
 
-                        // Close dropdown when clicking outside
-                        document.addEventListener("click", function hideDropdown(event) {
-                            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-                                dropdown.classList.add("hidden");
-                                document.removeEventListener("click", hideDropdown);
-                            }
-                        });
-                    }
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function hideDropdown(event) {
+            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.classList.add("hidden");
+                document.removeEventListener("click", hideDropdown);
+            }
+        });
+    }
+    // Function to open the image in a modal when clicked
+function previewImage(element) {
+    var imageUrl = element.getAttribute('data-image'); // Get the URL from the data-image attribute
+
+    // Find the modal and the modal image element
+    var modal = document.getElementById('modal');
+    var modalImage = document.getElementById('modal-image');
+    
+    // Set the image source to the value from the data-image attribute
+    modalImage.src = imageUrl;
+
+    // Show the modal
+    modal.classList.remove('hidden');
+}
+
+// Close the modal when the close button is clicked
+document.getElementById('close-modal').addEventListener('click', function() {
+    var modal = document.getElementById('modal');
+    modal.classList.add('hidden');
+});
+
+// Close the modal when clicking outside the modal content (on the overlay)
+document.getElementById('modal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        this.classList.add('hidden');
+    }
+});
+
+    // //FOR PREVIEW OF ATTACHMENT
+    // // Open modal when clicking on an attachment
+    // tableBody.addEventListener("click", (event) => {
+    //     if (event.target.dataset.image) {
+    //         modalImage.src = event.target.dataset.image;
+    //         modal.classList.remove("hidden");
+    //     }
+    // });
+
+    // // Close modal when clicking close button or outside modal
+    // closeModal.addEventListener("click", () => {
+    //     modal.classList.add("hidden");
+    // });
+
+    // modal.addEventListener("click", (event) => {
+    //     if (event.target === modal) {
+    //         modal.classList.add("hidden");
+    //     }
+    // });
 </script>
 @endsection
