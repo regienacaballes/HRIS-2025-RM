@@ -267,7 +267,7 @@
             }
         });
     }
-    // Function to open the image in a modal when clicked
+    // Function that previews image
     function previewImage(element) {
         var imageUrl = element.getAttribute('data-image'); // Get the URL from the data-image attribute
 
@@ -275,36 +275,33 @@
         var modal = document.getElementById('modal');
         var modalImage = document.getElementById('modal-image');
         
-        // Set the image source to the value from the data-image attribute
         modalImage.src = imageUrl;
 
-        // Show the modal
-        modal.classList.remove('hidden');
+        modal.classList.remove('hidden');// Show the modal
     }
 
-    // Close the modal when the close button is clicked
+    // Close modal when x button is clicked
     document.getElementById('close-modal').addEventListener('click', function() {
         var modal = document.getElementById('modal');
         modal.classList.add('hidden');
     });
 
-    // Close the modal when clicking outside the modal content (on the overlay)
+    // Close where ever when modal is open
     document.getElementById('modal').addEventListener('click', function(event) {
         if (event.target === this) {
             this.classList.add('hidden');
         }
     });
 
+    //Hide request summary
     const reqSummarybtn = document.getElementById("btn_action");
     const requestSummary = document.getElementById("reqSummary");
     const arrowIcon = document.getElementById("arrowIcon");
 
     reqSummarybtn.addEventListener("click", () => {
-        // Toggle visibility
-        requestSummary.classList.toggle("hidden");
+        requestSummary.classList.toggle("hidden"); // visibility
 
-        // Change arrow direction
-        arrowIcon.innerHTML = requestSummary.classList.contains("hidden") ? "&#11165;" : "&#11167;";
+        arrowIcon.innerHTML = requestSummary.classList.contains("hidden") ? "&#11165;" : "&#11167;";  // Change arrow direction
     });
 </script>
 @endsection
