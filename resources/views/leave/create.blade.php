@@ -4,33 +4,35 @@
     use App\Enums\Department;
 @endphp
 
-@extends('components.layout.leave')
+@extends('components.layout.auth')
 
 @section('title') Create Leave Request @endsection
 
 @section('content')
 <div class=" sm:px-6 lg:px-8 max-w-5xl mx-auto">
-    <div class="bg-white shadow-sm rounded-lg p-6">
+    <div class="bg-white shadow-sm rounded-lg p-10">
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">New Leave Request</h1>
+                <p class="mt-2 text-sm text-gray-600">Submit a new leave request for approval.</p>
+            </div>
+            <a href="{{ route('leave.index') }}">
+                <x-button class="p-3" text="Back to List" containerColor="primary" contentColor="white" />
+            </a>
+        </div>
+        <p>Request Information</p>
+        <hr class="mt-2">
+
         <form action="{{ route('leave.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
-            <div class="mb-8 flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900">New Leave Request</h1>
-                    <p class="mt-2 text-sm text-gray-600">Submit a new leave request for approval.</p>
-                </div>
-                <a href="{{ route('leave.index') }}">
-                    <x-button text="Back to List" containerColor="primary" contentColor="white" />
-                </a>
-            </div>
-            <hr class="-mt-2">
             <!-- Employee Information (readonly) -->
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 mt-6">
                 <div>
                     <x-form.input type="text" name="employee_name" label="Employee" required />
                 </div>
 
                 <div>
-                    <x-form.select class="h-9" type="select" name="department" label="Department" required>
+                    <x-form.select class="h-9" containerColor="primary" type="select" name="department" label="Department" required>
                         <option value="" selected disabled hidden>Choose an option</option> 
                         @foreach (Department::values() as $key => $value)
                             <option value="{{ $value }}" {{ old('department') == $value ? 'selected' : '' }}>{{ ucfirst($value) }}</option>
@@ -38,8 +40,6 @@
                     </x-form.select>
                 </div>
             </div>
-
-            {{-- <input type="hidden" name="employee_id" value="{{ $employee->id }}"> --}}
 
             <!-- Leave Type -->
             <div x-data="{ leaveType: '{{ old('leave_type') }}' }">
@@ -71,11 +71,11 @@
                 </div>
 
                 <!-- Reason -->
-                <div class="mt-6">
+                <div class="mt-4">
                     <x-form.label name="reason" label="Reason for Leave" />
                     <div class="mt-2">
                         <textarea id="reason" name="reason" rows="3" required
-                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50"
+                            class="p-2 text-gray-600 text-sm block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:outline-primary/30 focus:ring-opacity-50"
                             placeholder="State the reason for your leave.">{{ old('reason') }}</textarea>
                     </div>
                     <x-form.error name="reason" />
@@ -83,7 +83,7 @@
 
                 <!-- Shift Coverage -->
                 <div class="mt-6">
-                    <x-form.label name="shift_covered" label="Shift Coverage" class="font-semibold" />
+                    <x-form.label name="shift_covered" label="Shift Coverage"/>
 
                     <fieldset>
                         <legend class="sr-only ">
@@ -125,10 +125,11 @@
                 </div>
 
                 <!-- Required Proof Documents -->
-                <div class="mt-6 font-bold text-1xl">Attachments</div>
+                <div class="mt-6 text-1xl mb-2">Attachments</div>
+                <hr>
                 {{-- <p>Accepting image format file only.</p> --}}
 
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 mt-3">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 mt-6">
                     <x-form.file label="Proof of Leader Approval" name="proof_of_leader_approval"
                         accept=".jpeg,.jpg,.png" required />
 
@@ -146,16 +147,21 @@
 
                 <!-- Submit Buttons -->
                 <div class="flex justify-end space-x-3 pt-6 border-t mt-6">
-                    <a href="{{ route('leave.index') }}">
-                        <x-button text="Cancel" containerColor="gray-200" contentColor="gray-700" size="md"
-                            roundness="md" />
-                    </a>
 
                     <x-button type="submit" text="Submit Request" containerColor="primary" contentColor="white"
                         size="md" roundness="md" />
                 </div>
             </div>
         </form>
+        <div class="flex justify-end mr-35 -mt-8">
+            <a href="{{ route('leave.index') }}" onclick="event.preventDefault(); 
+                if (confirm('Are you sure you want to go back without completing the request?')) {
+                    window.location.href = '{{ route('leave.index') }}';
+                }">
+                <x-button text="Cancel" containerColor="gray-200" contentColor="gray-700" size="md" roundness="md" />
+            </a>
+
+        </div>
     </div>
 </div>
 @endsection

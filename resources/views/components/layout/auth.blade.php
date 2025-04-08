@@ -245,7 +245,7 @@
             letter-spacing: inherit;
             color: inherit;
             margin: 0;
-            padding: 0
+            padding: 0;
         }
 
         button,

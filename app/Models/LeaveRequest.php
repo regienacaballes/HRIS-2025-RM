@@ -62,7 +62,7 @@ class LeaveRequest extends Model
             ->when($filters['user_id'] ?? null, fn($q, $userId) =>
             $q->where('user_id', $userId));
     }
-
+    
     public function isPending()
     {
         return $this->status == RequestStatus::PENDING;
@@ -77,4 +77,24 @@ class LeaveRequest extends Model
     {
         return $this->status == RequestStatus::APPROVED;
     }
+
+    public static function countPending()
+    {
+        return self::where('status', RequestStatus::PENDING)->count();
+    }
+
+    public static function countApproved()
+    {
+        return self::where('status', RequestStatus::APPROVED)->count();
+    }
+    public static function countRejected()
+    {
+        return self::where('status', RequestStatus::REJECTED)->count();
+    }
+    public static function showPending()
+    {
+        return self::where('status', 'pending')->get();
+    }
+
+    
 }

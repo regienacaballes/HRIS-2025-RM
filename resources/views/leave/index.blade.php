@@ -1,6 +1,7 @@
 @php
     use App\Enums\RequestStatus;
     use App\Enums\LeaveType;
+    
 @endphp
 
 @extends('components.layout.auth')
@@ -8,21 +9,57 @@
 @section('title') Leave Request Dashboard @endsection
 
 @section('content')
-<div class="py-4 px-4 sm:px-6 lg:px-8 mx-auto">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Request Summary</h1>
-        
-        @if(auth()->user()->isEmployee() || auth()->user()->isHr() || auth()->user()->isAdmin())
-            <a href="{{ route('leave.create') }}">
-                <x-button
-                    text="New Request"
-                    containerColor="primary"
-                    contentColor="white"
-                    size="md"
-                    roundness="md"
-                />
-            </a>
-        @endif
+<div class="py-2 px-4 sm:px-6 lg:px-8 mx-auto">
+    <div class="flex flex-row justify-between items-center w-full">
+        <div>
+            <button id="btn_action" class="bg-transparent py-2 text-2xl font-semibold">
+                <span id="arrowIcon">&#11167;</span> 
+                <span class="ml-2">Request Summary</span>
+            </button>
+        </div>
+        <div class="mr-10 py-6">
+            @if(auth()->user()->isEmployee() || auth()->user()->isHr() || auth()->user()->isAdmin())
+                <a href="{{ route('leave.create') }}">
+                    <x-button
+                        text="New Request"
+                        containerColor="primary"
+                        contentColor="white"
+                        size="md"
+                        roundness="md"
+                    />
+                </a>
+            @endif
+        </div>
+    </div>
+    
+    {{-- <p class="text-2xl font-bold text-gray-900">Request Summary</p> --}}
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+        <div id="reqSummary" class="flex flex-wrap gap-4">
+            <button class="focus:outline-none">
+                <div id="allApr" class="bg-green-200 p-4 rounded-lg text-center w-32">
+                    <p class="text-gray-700">Approved</p>
+                    <p id="totalApr" class="text-2xl font-bold">{{ \App\Models\LeaveRequest::countApproved() }}</p>
+                </div>
+            </button>
+            <button id="allPen" class="focus:outline-none">
+                <div class="bg-yellow-200 p-4 rounded-lg text-center w-32">
+                    <p class="text-gray-700">Pending</p>
+                    <p id="totalPen" class="text-2xl font-bold">{{ \App\Models\LeaveRequest::countPending() }}</p>
+                </div>
+            </button>
+            <button id="allRej" class="focus:outline-none">
+                <div class="bg-red-200 p-4 rounded-lg text-center w-32">
+                    <p class="text-gray-700">Rejected</p>
+                    <p id="totalRej" class="text-2xl font-bold">{{ \App\Models\LeaveRequest::countRejected() }}</p>
+                </div>
+            </button>
+            <button id="allReqs" class="focus:outline-none">
+                <div class="bg-gray-300 p-4 rounded-lg text-center w-32">
+                    <p class="text-gray-700">Requests</p>
+                    <p id="totalReqs" class="text-2xl font-bold">{{ \App\Models\LeaveRequest::count(); }}</p>
+                </div>
+            </button>
+        </div>
     </div>
 
     <!-- Filters -->
@@ -84,7 +121,7 @@
     </div>
 
     <!-- Leave Requests Table -->
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden items-center">
+    <div id="lr_table" class="bg-white shadow-sm rounded-lg overflow-hidden items-center">
         <div class="min-w-full divide-y divide-gray-200">
             <div class="bg-gray-50">
                 <div class="flex px-4 py-3 text-xs sm:text-sm font-semibold text-gray-800 tracking-wider">
@@ -93,9 +130,9 @@
                     <div class="basis-64">Period</div>
                     {{-- <div>Duration</div> --}}
                     <div class="basis-42">Created</div>
-                    <div class="basis-72">Reason for Leave</div>
+                    <div class="basis-76">Reason for Leave</div>
                     <div class="basis-54">Attachments</div>
-                    <div class="basis-36">Status</div>
+                    <div class="basis-40">Status</div>
                     <div class="basis-36">Actions</div>
                 </div>
             </div>
@@ -112,7 +149,7 @@
                             </div>
                         </div>
                         <div class="basis-42 text-sm text-gray-600">{{ $request->created_at->format('M d, Y') }}</div>
-                        <div class="basis-72 text-sm text-gray-600 relative group">
+                        <div class="basis-76 text-sm text-gray-600 relative group">
                             <span class="cursor-pointer">{{ \Illuminate\Support\Str::limit($request->reason, 35, '...') }}</span>
                             <div class="absolute -right-7 -mt-2 hidden group-hover:flex bg-gray-800 text-white text-sm rounded shadow-lg w-72 max-w-xl whitespace-normal z-20">
                                 {{ $request->reason}}
@@ -132,7 +169,7 @@
                                 <img id="modal-image" src="" alt="Preview" class="w-96 h-auto">
                             </div>
                         </div>
-                        <div class="basis-36 items-center">
+                        <div class="basis-40 items-center">
                             <span @class([
                                 'px-2 py-1 text-xs font-medium rounded-full',
                                 'bg-yellow-100 text-yellow-800' => $request->status === RequestStatus::PENDING,
@@ -231,51 +268,43 @@
         });
     }
     // Function to open the image in a modal when clicked
-function previewImage(element) {
-    var imageUrl = element.getAttribute('data-image'); // Get the URL from the data-image attribute
+    function previewImage(element) {
+        var imageUrl = element.getAttribute('data-image'); // Get the URL from the data-image attribute
 
-    // Find the modal and the modal image element
-    var modal = document.getElementById('modal');
-    var modalImage = document.getElementById('modal-image');
-    
-    // Set the image source to the value from the data-image attribute
-    modalImage.src = imageUrl;
+        // Find the modal and the modal image element
+        var modal = document.getElementById('modal');
+        var modalImage = document.getElementById('modal-image');
+        
+        // Set the image source to the value from the data-image attribute
+        modalImage.src = imageUrl;
 
-    // Show the modal
-    modal.classList.remove('hidden');
-}
-
-// Close the modal when the close button is clicked
-document.getElementById('close-modal').addEventListener('click', function() {
-    var modal = document.getElementById('modal');
-    modal.classList.add('hidden');
-});
-
-// Close the modal when clicking outside the modal content (on the overlay)
-document.getElementById('modal').addEventListener('click', function(event) {
-    if (event.target === this) {
-        this.classList.add('hidden');
+        // Show the modal
+        modal.classList.remove('hidden');
     }
-});
 
-    // //FOR PREVIEW OF ATTACHMENT
-    // // Open modal when clicking on an attachment
-    // tableBody.addEventListener("click", (event) => {
-    //     if (event.target.dataset.image) {
-    //         modalImage.src = event.target.dataset.image;
-    //         modal.classList.remove("hidden");
-    //     }
-    // });
+    // Close the modal when the close button is clicked
+    document.getElementById('close-modal').addEventListener('click', function() {
+        var modal = document.getElementById('modal');
+        modal.classList.add('hidden');
+    });
 
-    // // Close modal when clicking close button or outside modal
-    // closeModal.addEventListener("click", () => {
-    //     modal.classList.add("hidden");
-    // });
+    // Close the modal when clicking outside the modal content (on the overlay)
+    document.getElementById('modal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            this.classList.add('hidden');
+        }
+    });
 
-    // modal.addEventListener("click", (event) => {
-    //     if (event.target === modal) {
-    //         modal.classList.add("hidden");
-    //     }
-    // });
+    const reqSummarybtn = document.getElementById("btn_action");
+    const requestSummary = document.getElementById("reqSummary");
+    const arrowIcon = document.getElementById("arrowIcon");
+
+    reqSummarybtn.addEventListener("click", () => {
+        // Toggle visibility
+        requestSummary.classList.toggle("hidden");
+
+        // Change arrow direction
+        arrowIcon.innerHTML = requestSummary.classList.contains("hidden") ? "&#11165;" : "&#11167;";
+    });
 </script>
 @endsection
