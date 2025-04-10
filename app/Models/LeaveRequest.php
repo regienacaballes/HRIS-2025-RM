@@ -51,15 +51,16 @@ class LeaveRequest extends Model
 
     public function scopeFilter($query, array $filters)
     {
-        return $query->when($filters['leave_type'] ?? null, fn($q, $type) =>
+        return $query
+        ->when($filters['leave_type'] ?? null, fn($q, $type) =>
             $q->where('leave_type', $type))
-            ->when($filters['status'] ?? null, fn($q, $status) =>
+        ->when($filters['status'] ?? null, fn($q, $status) =>
             $q->where('status', $status))
-            ->when($filters['start_date'] ?? null, fn($q, $date) =>
+        ->when($filters['start_date'] ?? null, fn($q, $date) =>
             $q->where('start_date', '>=', $date))
-            ->when($filters['end_date'] ?? null, fn($q, $date) =>
+        ->when($filters['end_date'] ?? null, fn($q, $date) =>
             $q->where('end_date', '<=', $date))
-            ->when($filters['user_id'] ?? null, fn($q, $userId) =>
+        ->when($filters['user_id'] ?? null, fn($q, $userId) =>
             $q->where('user_id', $userId));
     }
     

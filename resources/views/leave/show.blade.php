@@ -156,13 +156,30 @@ use Illuminate\Support\Str;
                 @endforeach
             </div>
             <hr>
-            <div class="mt-1 flex justify-end gap-3">
-                <button class="cursor-pointer rounded-sm bg-red-600 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 px-3 py-1.5 text-sm 
-                transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110" type="submit">Reject</button>   
-                <button class="cursor-pointer rounded-sm bg-green-600 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 px-3 py-1.5 text-sm 
-                transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110" type="submit">Approve</button>                               
-                </div>
-            </div>
+            @if(auth()->user()->isAdmin() || auth()->user()->isHr())
+                @if($leave->isPending())
+                    <div class="mt-1 flex justify-end gap-3">
+                        <form action="{{ route('leave.update', $leave) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="{{ RequestStatus::APPROVED->value }}">
+                            <x-button type="submit" text="Reject Request" containerColor="red-600" contentColor="white" />
+                        </form>
+                        <form action="{{ route('leave.update', $leave) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="{{ RequestStatus::APPROVED->value }}">
+                            <x-button type="submit" text="Approve Request" containerColor="green-600" contentColor="white" />
+                        </form>
+                        
+                        {{-- <button class="cursor-pointer rounded-sm bg-red-600 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 px-3 py-1.5 text-sm 
+                        transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110" type="submit">Reject</button>   
+                        <button class="cursor-pointer rounded-sm bg-green-600 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 px-3 py-1.5 text-sm 
+                        transition delay-150 duration-300 ease-in-out hover:-translate-y-1 hover:scale-110" type="submit">Approve</button>                               
+                        </div> --}}
+                    </div>
+                @endif
+            @endif
         </div>
     </div>
 </div>
