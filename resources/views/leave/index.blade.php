@@ -12,12 +12,12 @@
 <div class="py-2 px-4 sm:px-6 lg:px-8 mx-auto">
     <div class="flex flex-row justify-between align-middle sm:items-center w-full">
         <div>
-            <button id="btn_action" class="bg-transparent py-2 text-2xl font-semibold">
+            <button id="btn_action" class="bg-transparent py-0 text-2xl font-semibold">
                 <span id="arrowIcon">&#11167;</span> 
                 <span class="ml-2">Request Summary</span>
             </button>
         </div>
-        <div class="mr-10 py-6">
+        <div class="mr-10 py-4">
             @if(auth()->user()->isEmployee() || auth()->user()->isHr() || auth()->user()->isAdmin())
                 <a href="{{ route('leave.create') }}">
                     <x-button
@@ -32,7 +32,6 @@
         </div>
     </div>
     
-    {{-- <p class="text-2xl font-bold text-gray-900">Request Summary</p> --}}
     <div class="flex flex-col sm:flex-row justify-between mb-4">
         <div id="reqSummary" class="flex flex-wrap gap-4">
             <button class="focus:outline-none">
@@ -104,14 +103,7 @@
             </div>
 
             <div class=" ml-2 self-end mb-2 sm:mt-0">
-                <x-button
-                    text="Filter"
-                    containerColor="primary"
-                    contentColor="white"
-                    size="md"
-                    roundness="md"
-                    type="submit"
-                />
+                <x-button text="Filter" containerColor="primary" contentColor="white" size="md" roundness="md" type="submit"/>
             </div>
         </form>
     </div>
@@ -186,13 +178,9 @@
                                     </button>
                                     <div class="text-left text-sm hidden absolute -right-20 -mt-2 bg-white border border-gray-200 rounded-lg shadow-md w-26 px-4 z-10">
                                         <div>
-                                            @if(auth()->user()->isAdmin() || 
-                                            (auth()->user()->isHr()) || 
-                                            (auth()->user()->isEmployee() && $request->employee_id === auth()->user()->employee->id && $request->status === RequestStatus::PENDING))
-                                                <a href="{{ route('leave.edit', $request) }}">
-                                                    <x-button text="Edit" size="sm" containerColor="white" contentColor="amber-900" class="p-2 cursor-pointer hover:bg-gray-200"/>
-                                                </a>
-                                            @endif
+                                            <a href="{{ route('leave.edit', $request) }}" target="_blank">
+                                                <x-button text="Edit" size="sm" containerColor="white" contentColor="amber-900" class="p-2 cursor-pointer hover:bg-gray-200"/>
+                                            </a>
                                         </div>
                                         
                                         <form action="{{ route('leave.destroy', $request) }}" method="POST" class="inline"
@@ -306,11 +294,12 @@
         arrowIcon.innerHTML = requestSummary.classList.contains("hidden") ? "&#11165;" : "&#11167;";  // Change arrow direction
     });
 
-    //Reset filter textfields
+</script>
+@endsection
+
+{{-- //Reset filter textfields
     document.querySelector('form').addEventListener('submit', function () {
         setTimeout(() => {
             document.querySelector('form').reset(); // Resets the form fields
         }, 500);
-    });
-</script>
-@endsection
+    }); --}}

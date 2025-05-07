@@ -21,7 +21,7 @@ class WorkRequestController extends Controller
             'status' => 'sometimes|in:' . implode(',', RequestStatus::values()),
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date|after:start_date',
-            'employee_id' => 'sometimes|exists:employees,id'
+            'employee_id' => 'sometimes|exists:employees,id'    
         ]);
 
         $query = WorkRequest::with('Employee')
